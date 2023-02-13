@@ -27,7 +27,7 @@ func DBConn() (*sql.DB, error) {
 		return nil, err
 	}
 
-	err = createTable(db, TABLE_USERS, TABLE_BALANCES)
+	err = createTable(db, TABLE_USERS, TABLE_BALANCES, TABLE_TOP_UP_HISTORIES, TABLE_TRANSFER_HISTORIES)
 	if err != nil {
 		return nil, err
 	}
