@@ -34,7 +34,7 @@ func main() {
 		case 1:
 			user, opsi, isLoggedIn = controllers.Login(db)
 		case 2:
-			controllers.RegisterUser(db, user)
+			controllers.MenuRegister(db, user)
 		}
 	}
 
