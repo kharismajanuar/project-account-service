@@ -62,6 +62,7 @@ out:
 			//histori transfer
 		case 8:
 			//lihat profil lain
+			controllers.MenuGetAllUser(db)
 		case 9:
 			//logout
 			break out
