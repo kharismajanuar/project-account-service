@@ -9,6 +9,8 @@ import (
 	"project/models"
 	"regexp"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 func RegisterUser(db *sql.DB, newUser models.User) int {
@@ -62,13 +64,27 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 		return -1
 	}
 
+	//validasi password
+	//minimal 8 karakter
+	if len(newUser.Password) <= 8 {
+		fmt.Println("Password minimal 8 karakter")
+		return -1
+	}
+
+	//hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 10)
+	if err != nil {
+		fmt.Println("err hashed password")
+		return -1
+	}
+
 	query := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
 	statement, errPrepare := db.Prepare(query)
 	if errPrepare != nil {
 		log.Fatal("error prepare insert", errPrepare.Error())
 	}
 
-	result, errInsert := statement.Exec(newUser.Name, newUser.Phone, newUser.Password, newUser.Sex, newUser.DateOfBirth)
+	result, errInsert := statement.Exec(newUser.Name, newUser.Phone, hashedPassword, newUser.Sex, newUser.DateOfBirth)
 	if errInsert != nil {
 		log.Fatal("error exec insert", errInsert.Error())
 	} else {
