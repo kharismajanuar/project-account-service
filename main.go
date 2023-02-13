@@ -49,10 +49,10 @@ out:
 			opsiLogin = controllers.ReadAccount(db, user)
 		case 2:
 			//update akun
-			opsi = controllers.UpdateAccount(db, user.Phone)
+			opsiLogin = controllers.UpdateAccount(db, user.Phone)
 		case 3:
 			//delete akun
-			controllers.DeleteUser(db, user)
+			opsiLogin = controllers.DeleteUser(db, user)
 		case 4:
 			//top up
 		case 5:
