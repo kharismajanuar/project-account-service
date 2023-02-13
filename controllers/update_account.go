@@ -155,7 +155,7 @@ func UpdateAccount(db *sql.DB, phone string) int {
 	//pilih sesuai menu
 out:
 	for opsi != 5 {
-		fmt.Println("pilih data yang akan diupdate\n1.Telepon\n2.Nama\n3.Tanggal Lahir\n4.Password\n5.Menu Utama")
+		fmt.Println("pilih data yang akan diupdate\n1.Telepon\n2.Nama\n3.Tanggal Lahir\n4.Password\n5.Menu Utama\n6.Exit")
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
@@ -168,6 +168,8 @@ out:
 			opsi = updatePassword(phone, db)
 		case 5:
 			break out
+		case 6:
+			return 9
 		}
 	}
 	return -1
