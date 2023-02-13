@@ -13,6 +13,23 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func MenuRegister(db *sql.DB, user models.User) {
+
+	var opsi int = 1
+
+	for opsi != 9 {
+		fmt.Println("\n1. Register Akun Baru\n9. Kembali Ke Menu Utama")
+		fmt.Print("\nPilih menu: ")
+		fmt.Scanln(&opsi)
+		switch opsi {
+		case 1:
+			opsi = RegisterUser(db, user)
+		default:
+			fmt.Println("Input tidak sesuai")
+		}
+	}
+}
+
 func RegisterUser(db *sql.DB, newUser models.User) int {
 	scanner := bufio.NewScanner(os.Stdin)
 	newUser = models.User{}
@@ -41,33 +58,43 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	//validasi nama
 	//maksimal 50 karakter
 	if len(newUser.Name) > 50 {
-		fmt.Println("\nKarakter nama maksimal 50 karakter")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Karakter nama maksimal 50 karakter")
 		return -1
 	}
 
 	//hanya huruf dan spasi
 	if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
-		fmt.Println("\nNama hanya boleh diisi oleh huruf alfabet atau spasi")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
 		return -1
 	}
 
 	//validasi nomor telepon
 	//minimal 10 karakter
 	if len(newUser.Phone) < 10 || len(newUser.Phone) > 12 {
-		fmt.Println("\nNomor telepon minimal 10 karakter dan maksimal 12")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Nomor telepon minimal 10 karakter dan maksimal 12")
 		return -1
 	}
 
 	//hanya boleh memasukan angka
 	if !regexp.MustCompile(`^[0-9]*$`).MatchString(newUser.Phone) {
-		fmt.Println("\nNomor telepon hanya boleh terdiri dari angka")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Nomor telepon hanya boleh terdiri dari angka")
+		return -1
+	}
+
+	//nomor sudah dipakai
+	if DuplicatePhone(db, newUser, newUser.Phone) {
 		return -1
 	}
 
 	//validasi password
 	//minimal 8 karakter
 	if len(newUser.Password) < 8 {
-		fmt.Println("\nPassword minimal 8 karakter")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Password minimal 8 karakter")
 		return -1
 	}
 
@@ -80,17 +107,18 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 
 	//validasi jenis kelamin
 	if newUser.Sex != "Pria" && newUser.Sex != "Wanita" {
-		fmt.Println("\nJenis kelamin hanya boleh diisi oleh Pria atau Wanita")
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Jenis kelamin hanya boleh diisi oleh Pria atau Wanita")
 		return -1
 	}
 
-	query := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
-	statement, errPrepare := db.Prepare(query)
+	queryInsert := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
+	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
 		log.Fatal("error prepare insert", errPrepare.Error())
 	}
 
-	result, errInsert := statement.Exec(newUser.Name, newUser.Phone, hashedPassword, newUser.Sex, newUser.DateOfBirth)
+	result, errInsert := statementInsert.Exec(newUser.Name, newUser.Phone, hashedPassword, newUser.Sex, newUser.DateOfBirth)
 	if errInsert != nil {
 		log.Fatal("error exec insert", errInsert.Error())
 	} else {
@@ -106,19 +134,20 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	return -1
 }
 
-func MenuRegister(db *sql.DB, user models.User) {
-
-	var opsi int = 1
-
-	for opsi != 9 {
-		fmt.Println("\n1. Register Akun Baru\n9. Kembali Ke Menu Utama")
-		fmt.Print("\nPilih menu: ")
-		fmt.Scanln(&opsi)
-		switch opsi {
-		case 1:
-			opsi = RegisterUser(db, user)
-		default:
-			fmt.Println("Input tidak sesuai")
-		}
+func DuplicatePhone(db *sql.DB, selectUser models.User, phone string) bool {
+	query := "SELECT id FROM users WHERE phone = ?;"
+	statement, errPrepare := db.Prepare(query)
+	if errPrepare != nil {
+		log.Fatal("error prepare select", errPrepare.Error())
 	}
+
+	var user models.User
+	selectUser.Phone = phone
+	errScan := statement.QueryRow(selectUser.Phone).Scan(&user.ID)
+	if errScan == nil {
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Nomor telepon sudah digunakan")
+		return true
+	}
+	return false
 }
