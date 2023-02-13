@@ -111,6 +111,7 @@ func updateTelepon(phone string, db *sql.DB) int {
 		return -1
 	}
 
+	//hanya angka
 	if !regexp.MustCompile(`^[0-9]*$`).MatchString(data) {
 		fmt.Println("telepon hanya terdiri dari angka")
 		return -1
