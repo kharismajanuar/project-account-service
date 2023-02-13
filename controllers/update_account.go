@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -102,6 +103,10 @@ func updateTelepon(phone string, db *sql.DB) int {
 	//update telepon
 	_, err = db.Exec("UPDATE users SET phone = ? WHERE phone = ?", data, phone)
 	if err != nil {
+		if err.(*mysql.MySQLError).Number == 1062 {
+			fmt.Println("nomor telepon telah dipakai")
+			return -1
+		}
 		fmt.Println("update telepon gagal")
 		return -1
 	}
