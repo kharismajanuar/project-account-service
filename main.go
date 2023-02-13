@@ -48,6 +48,7 @@ out:
 			//baca akun
 		case 2:
 			//update akun
+			opsi = controllers.UpdateAccount(db, user.Phone)
 		case 3:
 			//delete akun
 		case 4:
