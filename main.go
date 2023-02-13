@@ -32,7 +32,7 @@ func main() {
 		}
 		switch opsi {
 		case 1:
-			user, opsi, isLoggedIn = controllers.Login(db, "", "")
+			user, opsi, isLoggedIn = controllers.Login(db)
 		case 2:
 			opsi = controllers.Register(db)
 		}
@@ -66,5 +66,5 @@ out:
 		}
 	}
 
-	fmt.Println("Terima Kasih ", user)
+	fmt.Println("Terima Kasih ", user.Name)
 }

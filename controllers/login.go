@@ -5,6 +5,6 @@ import (
 	"project/models"
 )
 
-func Login(db *sql.DB, phone string, password string) (models.User, int, bool) {
+func Login(db *sql.DB) (models.User, int, bool) {
 	return models.User{}, 0, true
 }
