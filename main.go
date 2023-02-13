@@ -46,6 +46,7 @@ out:
 		switch opsiLogin {
 		case 1:
 			//baca akun
+			opsiLogin = controllers.ReadAccount(db, user)
 		case 2:
 			//update akun
 		case 3:
