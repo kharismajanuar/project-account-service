@@ -41,40 +41,46 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	//validasi nama
 	//maksimal 50 karakter
 	if len(newUser.Name) > 50 {
-		fmt.Println("Karakter nama maksimal 50 karakter")
+		fmt.Println("\nKarakter nama maksimal 50 karakter")
 		return -1
 	}
 
 	//hanya huruf dan spasi
 	if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
-		fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
+		fmt.Println("\nNama hanya boleh diisi oleh huruf alfabet atau spasi")
 		return -1
 	}
 
 	//validasi nomor telepon
 	//minimal 10 karakter
 	if len(newUser.Phone) < 10 || len(newUser.Phone) > 12 {
-		fmt.Println("Nomor telepon minimal 10 karakter dan maksimal 12")
+		fmt.Println("\nNomor telepon minimal 10 karakter dan maksimal 12")
 		return -1
 	}
 
 	//hanya boleh memasukan angka
 	if !regexp.MustCompile(`^[0-9]*$`).MatchString(newUser.Phone) {
-		fmt.Println("Nomor telepon hanya boleh terdiri dari angka")
+		fmt.Println("\nNomor telepon hanya boleh terdiri dari angka")
 		return -1
 	}
 
 	//validasi password
 	//minimal 8 karakter
-	if len(newUser.Password) <= 8 {
-		fmt.Println("Password minimal 8 karakter")
+	if len(newUser.Password) < 8 {
+		fmt.Println("\nPassword minimal 8 karakter")
 		return -1
 	}
 
 	//hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 10)
 	if err != nil {
-		fmt.Println("err hashed password")
+		log.Fatal("error hashed password", err.Error())
+		return -1
+	}
+
+	//validasi jenis kelamin
+	if newUser.Sex != "Pria" && newUser.Sex != "Wanita" {
+		fmt.Println("\nJenis kelamin hanya boleh diisi oleh Pria atau Wanita")
 		return -1
 	}
 
@@ -105,8 +111,7 @@ func MenuRegister(db *sql.DB, user models.User) {
 	var opsi int = 1
 
 	for opsi != 9 {
-		fmt.Print("\n")
-		fmt.Println("1. Register Akun Baru\n9. Kembali Ke Menu Utama")
+		fmt.Println("\n1. Register Akun Baru\n9. Kembali Ke Menu Utama")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
 		switch opsi {
