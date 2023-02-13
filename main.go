@@ -19,51 +19,52 @@ func main() {
 	defer db.Close()
 
 	//pilih menu 1
-	var opsi int
-	fmt.Println("pilih menu\n1.Login\n2.Register")
-	_, err = fmt.Scanln(&opsi)
-	if err != nil {
-		fmt.Println(err.Error())
-		return
-	}
+	var opsi int = -1
 
 	var user models.User
-
+	isLoggedIn := false
 	for opsi != 0 {
+		fmt.Println("pilih menu\n1.Login\n2.Register")
+		_, err = fmt.Scanln(&opsi)
+		if err != nil {
+			fmt.Println(err.Error())
+			return
+		}
 		switch opsi {
 		case 1:
-			user, opsi = controllers.Login(db, "", "")
-			var opsiLogin int
-			fmt.Println("pilih menu\n1.Baca akun\n2.Update Akun\n3.Delete Akun\n4.Top Up\n5.Transfer\n6.Histori Top Up\n7.Histori Transfer\n8.Lihat Profil Lain\n9.Logout")
-			fmt.Scanln(&opsiLogin)
-			for opsiLogin != 9 {
-				switch opsiLogin {
-				case 1:
-					//baca akun
-				case 2:
-					//update akun
-				case 3:
-					//delete akun
-				case 4:
-					//top up
-				case 5:
-					//transfer
-				case 6:
-					//histori top up
-				case 7:
-					//histori transfer
-				case 8:
-					//lihat profil lain
-				case 9:
-					//logout
-					break
-				}
-			}
+			user, opsi, isLoggedIn = controllers.Login(db, "", "")
 		case 2:
 			opsi = controllers.Register(db)
 		}
 	}
 
-	fmt.Println("Terima Kasih ", user)
+	var opsiLogin int = -1
+out:
+	for isLoggedIn && opsiLogin != 9 {
+		fmt.Println("pilih menu\n1.Baca akun\n2.Update Akun\n3.Delete Akun\n4.Top Up\n5.Transfer\n6.Histori Top Up\n7.Histori Transfer\n8.Lihat Profil Lain\n9.Logout")
+		fmt.Scanln(&opsiLogin)
+		switch opsiLogin {
+		case 1:
+			//baca akun
+		case 2:
+			//update akun
+		case 3:
+			//delete akun
+		case 4:
+			//top up
+		case 5:
+			//transfer
+		case 6:
+			//histori top up
+		case 7:
+			//histori transfer
+		case 8:
+			//lihat profil lain
+		case 9:
+			//logout
+			break out
+		}
+	}
 
+	fmt.Println("Terima Kasih ", user)
 }
