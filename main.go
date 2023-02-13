@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"project/config"
 	"project/controllers"
-	"project/menu"
 	"project/models"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -35,7 +34,7 @@ func main() {
 		case 1:
 			user, opsi, isLoggedIn = controllers.Login(db)
 		case 2:
-			menu.RegisterUser()
+			controllers.MenuRegister(db, user)
 		}
 	}
 
