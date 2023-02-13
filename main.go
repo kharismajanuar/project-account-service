@@ -52,6 +52,7 @@ out:
 			opsi = controllers.UpdateAccount(db, user.Phone)
 		case 3:
 			//delete akun
+			controllers.DeleteUser(db, user)
 		case 4:
 			//top up
 		case 5:
