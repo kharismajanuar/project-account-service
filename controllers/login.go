@@ -20,12 +20,16 @@ func Login(db *sql.DB) (models.User, int, bool) {
 	}
 
 	//validasi nomor telepon
-	if regexp.MustCompile(`^[a-zA-Z]+$`).MatchString(phone) {
-		fmt.Println("nomor telepon mengandung huruf")
+	//validasi telepon
+	//minimal 10 karakter
+	if len(phone) < 10 || len(phone) > 12 {
+		fmt.Println("telepon minimal 10 karakter maksimal 12")
 		return models.User{}, -1, false
 	}
-	if len(phone) < 10 {
-		fmt.Println("nomor telepon kurang dari 10")
+
+	//hanya angka
+	if !regexp.MustCompile(`^[0-9]*$`).MatchString(phone) {
+		fmt.Println("telepon hanya terdiri dari angka")
 		return models.User{}, -1, false
 	}
 
