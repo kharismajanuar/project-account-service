@@ -1,13 +1,39 @@
 package controllers
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"project/models"
+	"time"
 )
 
 func RegisterUser(db *sql.DB, newUser models.User) {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Print("\n")
+	fmt.Println("Register Akun Baru")
+	newUser = models.User{}
+	fmt.Println("Nama Lengkap:")
+	scanner.Scan()
+	name := scanner.Text()
+	newUser.Name = name
+	fmt.Println("No Telepon:")
+	fmt.Scanln(&newUser.Phone)
+	fmt.Println("Password:")
+	fmt.Scanln(&newUser.Password)
+	fmt.Println("Jenis Kelamin (Pria/Wanita):")
+	fmt.Scanln(&newUser.Sex)
+	fmt.Println("Tanggal Lahir (d/m/y):")
+	var layoutFormat, value string
+	var date time.Time
+	layoutFormat = "2/1/2006"
+	fmt.Scanln(&value)
+	date, _ = time.Parse(layoutFormat, value)
+	newUser.DateOfBirth = date
+
 	query := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
 	statement, errPrepare := db.Prepare(query)
 	if errPrepare != nil {
