@@ -42,8 +42,9 @@ func Login(db *sql.DB) (models.User, int, bool) {
 	}
 
 	//validasi password
-	if len(password) < 5 {
-		fmt.Println("password tidak boleh kurang dari 5")
+	//minimal 8 karakter
+	if len(password) < 8 {
+		fmt.Println("password minimal 5 huruf")
 		return models.User{}, -1, false
 	}
 
