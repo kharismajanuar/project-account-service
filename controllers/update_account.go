@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
+	"os"
 	"regexp"
 	"time"
 
@@ -42,36 +44,16 @@ func updatePassword(phone string, db *sql.DB) int {
 }
 
 func updateTanggalLahir(phone string, db *sql.DB) int {
-	var year string
-	var month string
-	var date string
-
-	//input tahun
-	fmt.Println("input tahun : ")
-	_, err := fmt.Scanln(&year)
+	fmt.Println("input tanggal (tahun-bulan-tanggal) :")
+	in := bufio.NewReader(os.Stdin)
+	data, err := in.ReadString('\n')
 	if err != nil {
-		fmt.Println("update tanggal lahir gagal")
-		return -1
-	}
-
-	//input bulan
-	fmt.Println("input bulan : ")
-	_, err = fmt.Scanln(&month)
-	if err != nil {
-		fmt.Println("update tanggal lahir gagal")
-		return -1
-	}
-
-	//input tanggal
-	fmt.Println("input tanggal : ")
-	_, err = fmt.Scanln(&date)
-	if err != nil {
-		fmt.Println("update tanggal lahir gagal")
+		fmt.Println("update nama gagal")
 		return -1
 	}
 
 	//parsing dob
-	dob, err := time.Parse("2006-1-2", fmt.Sprintf("%s-%s-%s", year, month, date))
+	dob, err := time.Parse("2006-1-2\n", data)
 	if err != nil {
 		fmt.Println("harap mengisi tanggal lahir dengan benar")
 		return -1
@@ -130,9 +112,9 @@ func updateTelepon(phone string, db *sql.DB) int {
 
 func updateNama(phone string, db *sql.DB) int {
 	//input nama
-	var data string
 	fmt.Println("input nama :")
-	_, err := fmt.Scanln(&data)
+	in := bufio.NewReader(os.Stdin)
+	data, err := in.ReadString('\n')
 	if err != nil {
 		fmt.Println("update nama gagal")
 		return -1
@@ -158,7 +140,6 @@ func updateNama(phone string, db *sql.DB) int {
 	}
 
 	fmt.Println("update nama berhasil, menjadi ", data)
-
 	return -1
 }
 
