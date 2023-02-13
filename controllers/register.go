@@ -13,11 +13,11 @@ import (
 
 func RegisterUser(db *sql.DB, newUser models.User) int {
 	scanner := bufio.NewScanner(os.Stdin)
+	newUser = models.User{}
 
-	// input menu
+	//input menu
 	fmt.Print("\n")
 	fmt.Println("Register Akun Baru")
-	newUser = models.User{}
 	fmt.Println("Nama Lengkap:")
 	scanner.Scan()
 	name := scanner.Text()
@@ -50,6 +50,17 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	}
 
 	//validasi nomor telepon
+	//minimal 10 karakter
+	if len(newUser.Phone) < 10 || len(newUser.Phone) > 12 {
+		fmt.Println("Nomor telepon minimal 10 karakter dan maksimal 12")
+		return -1
+	}
+
+	//hanya boleh memasukan angka
+	if !regexp.MustCompile(`^[0-9]*$`).MatchString(newUser.Phone) {
+		fmt.Println("Nomor telepon hanya boleh terdiri dari angka")
+		return -1
+	}
 
 	query := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
 	statement, errPrepare := db.Prepare(query)
@@ -78,6 +89,7 @@ func MenuRegister(db *sql.DB, user models.User) {
 	var opsi int = 1
 
 	for opsi != 9 {
+		fmt.Print("\n")
 		fmt.Println("1. Register Akun Baru\n9. Kembali Ke Menu Utama")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
