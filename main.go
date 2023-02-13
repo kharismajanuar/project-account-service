@@ -52,6 +52,7 @@ out:
 			opsi = controllers.UpdateAccount(db, user.Phone)
 		case 3:
 			//delete akun
+			controllers.DeleteUser(db, user)
 		case 4:
 			//top up
 		case 5:
@@ -62,6 +63,7 @@ out:
 			//histori transfer
 		case 8:
 			//lihat profil lain
+			controllers.MenuGetAllUser(db)
 		case 9:
 			//logout
 			break out
