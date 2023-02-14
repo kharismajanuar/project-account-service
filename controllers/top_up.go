@@ -31,7 +31,7 @@ func TopUp(db *sql.DB, user models.User) int {
 	}
 
 	//tambahkan saldo ke balance
-	_, err = tx.Exec("UPDATE balances SET balance = balance + ? WHERE user_ID = ?", saldo, user.ID)
+	_, err = tx.Exec("UPDATE balances SET balance = balance + ?,updated_at = now() WHERE user_ID = ?", saldo, user.ID)
 	if err != nil {
 		fmt.Println("gagal update saldo")
 		if rbErr := tx.Rollback(); rbErr != nil {
