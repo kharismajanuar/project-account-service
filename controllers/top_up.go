@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"bufio"
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"project/models"
 )
 
@@ -18,8 +20,9 @@ func TopUp(db *sql.DB, user models.User) int {
 	}
 	//input berita top up
 	fmt.Println("input berita top up :")
-	var info string
-	fmt.Scanln(&info)
+	in := bufio.NewScanner(os.Stdin)
+	in.Scan()
+	info := in.Text()
 
 	tx, err := db.Begin()
 	if err != nil {
@@ -60,5 +63,15 @@ func TopUp(db *sql.DB, user models.User) int {
 	}
 
 	fmt.Println("top up berhasil sejumlah ", saldo)
-	return -1
+
+	fmt.Println("pilih menu :\n1.Menu Utama\n2.Exit")
+	var opsi int
+	_, err = fmt.Scanln(&opsi)
+	if err != nil {
+		return 9
+	}
+	if opsi == 1 {
+		return -1
+	}
+	return 9
 }
