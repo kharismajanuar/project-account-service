@@ -39,6 +39,10 @@ func TopUpHistories(db *sql.DB, user models.User) int {
 		fmt.Printf("Info :\t%s\n", v.Info)
 	}
 
+	if len(topup) == 0 {
+		fmt.Println("Tidak ada data riwayat top up")
+	}
+
 	fmt.Println("pilih menu\n1.menu utama\n2.exit")
 	var opsi int
 	fmt.Scanln(&opsi)
