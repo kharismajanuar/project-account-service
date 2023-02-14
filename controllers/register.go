@@ -112,6 +112,13 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 		return -1
 	}
 
+	//validasi tanggal lahir
+	if time.Since(date).Hours()/24/365 < 17 {
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Minimal usia untuk mendaftar adalah 17 tahun")
+		return -1
+	}
+
 	queryInsert := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
@@ -130,6 +137,8 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 			fmt.Println("Gagal menambahkan akun baru!")
 		}
 	}
+
+	InsertBalances(db, 0)
 
 	return -1
 }
@@ -150,4 +159,26 @@ func DuplicatePhone(db *sql.DB, selectUser models.User, phone string) bool {
 		return true
 	}
 	return false
+}
+
+func InsertBalances(db *sql.DB, balance float64) {
+
+	queryInsert := "INSERT INTO balances (balance) VALUES (?);"
+	statementInsert, errPrepare := db.Prepare(queryInsert)
+	if errPrepare != nil {
+		log.Fatal("error prepare insert", errPrepare.Error())
+	}
+
+	result, errInsert := statementInsert.Exec(balance)
+	if errInsert != nil {
+		log.Fatal("error exec insert", errInsert.Error())
+	} else {
+		row, _ := result.RowsAffected()
+		if row > 0 {
+			fmt.Print("\n")
+			fmt.Printf("Saldo Anda sekarang Rp%v\n", balance)
+		} else {
+			fmt.Println("Gagal menambahkan saldo")
+		}
+	}
 }
