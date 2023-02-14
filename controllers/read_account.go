@@ -21,7 +21,7 @@ func ReadAccount(db *sql.DB, user models.User) int {
 		return -1
 	}
 
-	fmt.Printf("Saldo\t:%f\n", saldo)
+	fmt.Printf("Saldo\t:%.2f\n", saldo)
 
 	var menu int
 	fmt.Println("\npilih :\n1.Kembali ke menu utama\n2.Exit")
