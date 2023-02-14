@@ -7,27 +7,49 @@ import (
 	"project/models"
 )
 
-func DeleteUser(db *sql.DB, updateUser models.User) int {
-	//input menu
-	fmt.Print("\n")
-	fmt.Println("Hapus Akun")
-	fmt.Println("Masukan nomor telepon:")
-	fmt.Scanln(&updateUser.Phone)
+func MenuDelete(db *sql.DB, user models.User) int {
 
-	query := "UPDATE users SET deleted_at = now() WHERE phone = ?;"
+	var opsi string = "a"
+
+	for opsi != "n" {
+		fmt.Println("\nApakah Anda yakin untuk menghapus akun?")
+		fmt.Print("Pilih (y/n): ")
+		fmt.Scan(&opsi)
+		if opsi == "y" {
+			DeleteUser(db, user)
+			break
+		}
+	}
+
+	return -1
+}
+
+func DeleteUser(db *sql.DB, user models.User) int {
+	//input menu
+	var phone string
+	fmt.Println("Masukan nomor telepon untuk konfirmasi:")
+	fmt.Scanln(&phone)
+
+	if GetIdByPhone(db, user, phone) != user.ID {
+		fmt.Println("\nGagal menghapus akun!")
+		fmt.Println("Nomor yang Anda masukan tidak sesuai")
+		return -1
+	}
+
+	query := "UPDATE users SET deleted_at = now() WHERE id = ?;"
 	statement, errPrepare := db.Prepare(query)
 	if errPrepare != nil {
 		log.Fatal("error prepare update", errPrepare.Error())
 	}
 
-	result, errUpdate := statement.Exec(updateUser.Phone)
+	result, errUpdate := statement.Exec(user.ID)
 	if errUpdate != nil {
 		log.Fatal("error exec update", errUpdate.Error())
 	} else {
 		row, _ := result.RowsAffected()
 		if row > 0 {
 			fmt.Print("\n")
-			fmt.Printf("Akun dengan nomor telpon %s berhasil dihapus!\n", updateUser.Phone)
+			fmt.Printf("Akun Anda berhasil dihapus!\n")
 			fmt.Print("\n")
 		} else {
 			fmt.Print("\n")
