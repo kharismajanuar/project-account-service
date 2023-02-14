@@ -67,7 +67,7 @@ out:
 			opsiLogin = controllers.MenuTransferHistory(db, user)
 		case 8:
 			//lihat profil lain
-			controllers.MenuGetAllUser(db)
+			opsiLogin = controllers.MenuGetUser(db)
 		case 9:
 			//logout
 			break out
