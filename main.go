@@ -64,6 +64,7 @@ out:
 			opsiLogin = controllers.TopUpHistories(db, user)
 		case 7:
 			//histori transfer
+			opsiLogin = controllers.MenuTransferHistory(db, user)
 		case 8:
 			//lihat profil lain
 			controllers.MenuGetAllUser(db)

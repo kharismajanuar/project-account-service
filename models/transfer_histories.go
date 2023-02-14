@@ -9,4 +9,6 @@ type TransferHistories struct {
 	Date           time.Time
 	Amount         float64
 	Info           string
+	ReceiverName   string
+	ReceiverPhone  string
 }
