@@ -9,7 +9,7 @@ import (
 	"project/models"
 )
 
-func MenuTransfer(db *sql.DB, user models.User) {
+func MenuTransfer(db *sql.DB, user models.User) int {
 	var opsi int = 1
 
 	for opsi != 9 {
@@ -23,6 +23,8 @@ func MenuTransfer(db *sql.DB, user models.User) {
 			fmt.Println("Input tidak sesuai")
 		}
 	}
+
+	return -1
 }
 
 func Transfer(db *sql.DB, user models.User) int {
@@ -74,7 +76,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	}
 
 	//kurangi saldo pengirim
-	_, err = tx.Exec("UPDATE balances SET balance = ? WHERE user_id = ?;", senderBalance, user.ID)
+	_, err = tx.Exec("UPDATE balances SET updated_at = now(), balance = ? WHERE user_id = ?", senderBalance, user.ID)
 	if err != nil {
 		fmt.Println("gagal update saldo pengirim")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -85,7 +87,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	}
 
 	//tambahkan saldo penerima
-	_, err = tx.Exec("UPDATE balances SET balance = ? WHERE user_id = ?;", receiverBalance, receiverID)
+	_, err = tx.Exec("UPDATE balances SET updated_at = now(), balance = ? WHERE user_id = ?", receiverBalance, receiverID)
 	if err != nil {
 		fmt.Println("gagal update saldo penerima")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -122,10 +124,10 @@ func Transfer(db *sql.DB, user models.User) int {
 
 	fmt.Print("\n")
 	fmt.Println("============================")
-	fmt.Printf("Berhasil transfer Rp%v\n", nominal)
+	fmt.Printf("Berhasil transfer Rp%.2f\n", nominal)
 	fmt.Printf("\nNama Pengirim: %s\n", senderName)
 	fmt.Printf("Nama Penerima: %s\n", receiverName)
-	fmt.Printf("\nSisa saldo Anda sekarang Rp%v\n", senderBalance)
+	fmt.Printf("\nSisa saldo Anda sekarang Rp%.2f\n", senderBalance)
 	fmt.Println("============================")
 
 	return -1
