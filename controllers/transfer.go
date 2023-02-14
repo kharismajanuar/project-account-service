@@ -56,6 +56,10 @@ func Transfer(db *sql.DB, user models.User) int {
 		return -1
 	}
 
+	//operasi saldo pengirim dan penerima
+	senderBalance := CheckBalance(db, user.ID) - nominal
+	receiverBalance := CheckBalance(db, receiverID) + nominal
+
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println("Gagal transaksi transfer")
@@ -63,7 +67,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	}
 
 	//kurangi saldo pengirim
-	_, err = tx.Exec("UPDATE balances SET balance = balance - ? WHERE user_id = ?;", nominal, user.ID)
+	_, err = tx.Exec("UPDATE balances SET balance = ? WHERE user_id = ?;", senderBalance, user.ID)
 	if err != nil {
 		fmt.Println("gagal update saldo pengirim")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -74,7 +78,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	}
 
 	//tambahkan saldo penerima
-	_, err = tx.Exec("UPDATE balances SET balance = balance + ? WHERE user_id = ?;", nominal, receiverID)
+	_, err = tx.Exec("UPDATE balances SET balance = ? WHERE user_id = ?;", receiverBalance, receiverID)
 	if err != nil {
 		fmt.Println("gagal update saldo penerima")
 		if rbErr := tx.Rollback(); rbErr != nil {
