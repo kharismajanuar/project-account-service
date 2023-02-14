@@ -55,6 +55,7 @@ out:
 			opsiLogin = controllers.DeleteUser(db, user)
 		case 4:
 			//top up
+			opsiLogin = controllers.TopUp(db, user)
 		case 5:
 			//transfer
 		case 6:
