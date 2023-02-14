@@ -16,17 +16,9 @@ func MenuGetUser(db *sql.DB) int {
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
-			opsiNama := 1
-			for opsiNama != 9 {
-				fmt.Print("\n")
-				GetUserByName(db)
-				fmt.Print("9. Kembali ke Menu\n")
-				fmt.Print("\nPilih Menu: ")
-				fmt.Scanln(&opsiNama)
-			}
-
+			GetUserByName(db)
 		case 2:
-
+			GetUserByPhone(db)
 		}
 	}
 	return -1
@@ -34,11 +26,14 @@ func MenuGetUser(db *sql.DB) int {
 
 func GetUserByName(db *sql.DB) {
 	//input pencarian berdasarkan nama
+	search := "%"
 	var name string
-	fmt.Println("Masukan pencarian:")
+	fmt.Print("\nMasukan pencarian: ")
 	fmt.Scanln(&name)
+	search += name
+	search += "%"
 
-	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL AND name LIKE '% ? %';", name)
+	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL AND name LIKE ?;", search)
 	if errSelect != nil {
 		log.Fatal("error query select", errSelect.Error())
 	}
@@ -53,11 +48,48 @@ func GetUserByName(db *sql.DB) {
 		allUsers = append(allUsers, datarow)
 	}
 
-	// fmt.Println(allGuru)
+	// fmt.Println(allUser)
+	fmt.Print("\n")
+	fmt.Println("Hasil pencarian:")
 	for _, users := range allUsers {
+		fmt.Print("\n")
 		fmt.Printf("ID         : %d\n", users.ID)
 		fmt.Printf("Nama       : %s\n", users.Name)
 		fmt.Printf("No Telepon : %s\n", users.Phone)
+	}
+}
+
+func GetUserByPhone(db *sql.DB) {
+	//input pencarian berdasarkan no telpon
+	search := "%"
+	var phone string
+	fmt.Print("\nMasukan pencarian: ")
+	fmt.Scanln(&phone)
+	search += phone
+	search += "%"
+
+	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL AND phone LIKE ?;", search)
+	if errSelect != nil {
+		log.Fatal("error query select", errSelect.Error())
+	}
+
+	var allUsers []models.User
+	for rows.Next() {
+		var datarow models.User
+		errScan := rows.Scan(&datarow.ID, &datarow.Name, &datarow.Phone)
+		if errScan != nil {
+			log.Fatal("error scan select", errScan.Error())
+		}
+		allUsers = append(allUsers, datarow)
+	}
+
+	// fmt.Println(allUser)
+	fmt.Print("\n")
+	fmt.Println("Hasil pencarian:")
+	for _, users := range allUsers {
 		fmt.Print("\n")
+		fmt.Printf("ID         : %d\n", users.ID)
+		fmt.Printf("Nama       : %s\n", users.Name)
+		fmt.Printf("No Telepon : %s\n", users.Phone)
 	}
 }
