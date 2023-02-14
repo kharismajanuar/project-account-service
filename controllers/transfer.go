@@ -31,6 +31,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	fmt.Println("Masukan nomor telepon tujuan:")
 	fmt.Scanln(&phone)
 
+	//mengambil id melalui nomor telepon
 	receiverID := GetIdByPhone(db, user, phone)
 
 	//input nominal transfer
@@ -104,7 +105,14 @@ func Transfer(db *sql.DB, user models.User) int {
 		return -1
 	}
 
-	fmt.Printf("Berhasil transfer Rp%v dari user '%d' ke user '%d'", nominal, user.ID, receiverID)
+	//mengambil nama user dari id
+	senderName := GetNameByID(db, user, user.ID)
+	receiverName := GetNameByID(db, user, receiverID)
+
+	fmt.Print("\n")
+	fmt.Printf("Berhasil transfer Rp%v\n", nominal)
+	fmt.Printf("Nama Pengirim:\n%s\n", senderName)
+	fmt.Printf("Nama Penerima:\n%s\n", receiverName)
 
 	return -1
 }
@@ -141,4 +149,21 @@ func GetIdByPhone(db *sql.DB, selectUser models.User, phone string) int {
 	}
 
 	return user.ID
+}
+
+func GetNameByID(db *sql.DB, selectUser models.User, id int) string {
+	query := "SELECT name FROM users WHERE id = ?;"
+	statement, errPrepare := db.Prepare(query)
+	if errPrepare != nil {
+		log.Fatal("error prepare select", errPrepare.Error())
+	}
+
+	var user models.User
+	selectUser.ID = id
+	errScan := statement.QueryRow(selectUser.ID).Scan(&user.Name)
+	if errScan != nil {
+		log.Fatal("error scan select", errScan.Error())
+	}
+
+	return user.Name
 }
