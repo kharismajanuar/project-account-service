@@ -20,7 +20,7 @@ func MenuGetAllUser(db *sql.DB) {
 }
 
 func GetAllUsers(db *sql.DB) {
-	rows, errSelect := db.Query("SELECT id, name, phone FROM users;")
+	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL;")
 	if errSelect != nil {
 		log.Fatal("error query select", errSelect.Error())
 	}
