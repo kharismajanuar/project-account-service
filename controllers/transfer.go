@@ -49,6 +49,13 @@ func Transfer(db *sql.DB, user models.User) int {
 	in.Scan()
 	info := in.Text()
 
+	//validasi nomor telpon
+	if receiverID == user.ID {
+		fmt.Println("\nTransfer tidak dapat diproses")
+		fmt.Println("Anda tidak dapat melakukan transfer ke nomor Anda sendiri!")
+		return -1
+	}
+
 	//validasi saldo pengirim
 	if nominal > CheckBalance(db, user.ID) {
 		fmt.Println("\nTransfer tidak dapat diproses")
@@ -114,9 +121,12 @@ func Transfer(db *sql.DB, user models.User) int {
 	receiverName := GetNameByID(db, user, receiverID)
 
 	fmt.Print("\n")
+	fmt.Println("============================")
 	fmt.Printf("Berhasil transfer Rp%v\n", nominal)
-	fmt.Printf("Nama Pengirim:\n%s\n", senderName)
-	fmt.Printf("Nama Penerima:\n%s\n", receiverName)
+	fmt.Printf("\nNama Pengirim: %s\n", senderName)
+	fmt.Printf("Nama Penerima: %s\n", receiverName)
+	fmt.Printf("\nSisa saldo Anda sekarang Rp%v\n", senderBalance)
+	fmt.Println("============================")
 
 	return -1
 }
