@@ -35,7 +35,7 @@ func updatePassword(phone string, db *sql.DB) int {
 		fmt.Println("update password gagal")
 		return -1
 	}
-	_, err = db.Exec("UPDATE users SET password = ? WHERE phone = ?", string(hashedPassword), phone)
+	_, err = db.Exec("UPDATE users SET password = ?, updated_at = now() WHERE phone = ?", string(hashedPassword), phone)
 	if err != nil {
 		fmt.Println("update password gagal")
 		return -1
@@ -67,7 +67,7 @@ func updateTanggalLahir(phone string, db *sql.DB) int {
 	}
 
 	//update tanggal lahir
-	_, err = db.Exec("UPDATE users SET date_of_birth = ? WHERE phone = ?", dob, phone)
+	_, err = db.Exec("UPDATE users SET date_of_birth = ?, updated_at = now() WHERE phone = ?", dob, phone)
 	if err != nil {
 		fmt.Println("update tanggal lahir gagal")
 		return -1
@@ -101,7 +101,7 @@ func updateTelepon(phone string, db *sql.DB) int {
 	}
 
 	//update telepon
-	_, err = db.Exec("UPDATE users SET phone = ? WHERE phone = ?", data, phone)
+	_, err = db.Exec("UPDATE users SET phone = ?, updated_at = now() WHERE phone = ?", data, phone)
 	if err != nil {
 		if err.(*mysql.MySQLError).Number == 1062 {
 			fmt.Println("nomor telepon telah dipakai")
@@ -118,12 +118,13 @@ func updateTelepon(phone string, db *sql.DB) int {
 func updateNama(phone string, db *sql.DB) int {
 	//input nama
 	fmt.Println("input nama :")
-	in := bufio.NewReader(os.Stdin)
-	data, err := in.ReadString('\n')
-	if err != nil {
-		fmt.Println("update nama gagal")
+	in := bufio.NewScanner(os.Stdin)
+	valid := in.Scan()
+	if !valid {
+		fmt.Println("nama tidak valid")
 		return -1
 	}
+	data := in.Text()
 
 	//validasi nama
 	//maksimal 50 karakter
@@ -138,7 +139,7 @@ func updateNama(phone string, db *sql.DB) int {
 	}
 
 	//update nama
-	_, err = db.Exec("UPDATE users SET name = ? WHERE phone = ?", data, phone)
+	_, err := db.Exec("UPDATE users SET name = ?, updated_at = now() WHERE phone = ?", data, phone)
 	if err != nil {
 		fmt.Println("update nama gagal")
 		return -1
