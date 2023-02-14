@@ -33,6 +33,7 @@ func DeleteUser(db *sql.DB, user models.User) int {
 	if GetIdByPhone(db, user, phone) != user.ID {
 		fmt.Println("\nGagal menghapus akun!")
 		fmt.Println("Nomor yang Anda masukan tidak sesuai")
+		fmt.Print("\n")
 		return -1
 	}
 
