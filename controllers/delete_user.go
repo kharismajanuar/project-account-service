@@ -27,6 +27,7 @@ func MenuDelete(db *sql.DB, user models.User) int {
 func DeleteUser(db *sql.DB, user models.User) int {
 	//input menu
 	var phone string
+	fmt.Print("\n")
 	fmt.Println("Masukan nomor telepon untuk konfirmasi:")
 	fmt.Scanln(&phone)
 
