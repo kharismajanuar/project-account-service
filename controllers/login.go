@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"project/models"
 	"regexp"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -66,6 +67,31 @@ func Login(db *sql.DB) (models.User, int, bool) {
 	}
 
 	//login berhasil
-	fmt.Println("\n***Login sukses***")
+	fmt.Println(`
+	╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭╮
+	╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╭╯╰╮
+	╭━━┳━━┳━━┳━━┳╮╭┳━╋╮╭╯╭━━┳━━┳━┳╮╭┳┳━━┳━━╮╭━━┳━━┳━━╮
+	┃╭╮┃╭━┫╭━┫╭╮┃┃┃┃╭╮┫┃╱┃━━┫┃━┫╭┫╰╯┣┫╭━┫┃━┫┃╭╮┃╭╮┃╭╮┃
+	┃╭╮┃╰━┫╰━┫╰╯┃╰╯┃┃┃┃╰╮┣━━┃┃━┫┃╰╮╭┫┃╰━┫┃━┫┃╭╮┃╰╯┃╰╯┃
+	╰╯╰┻━━┻━━┻━━┻━━┻╯╰┻━╯╰━━┻━━┻╯╱╰╯╰┻━━┻━━╯╰╯╰┫╭━┫╭━╯
+	╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱┃┃╱┃┃
+	╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╱╰╯╱╰╯`)
+	c := time.NewTicker(25 * time.Millisecond)
+	go func() {
+		var counter int
+		for {
+			select {
+			case _ = <-c.C:
+				counter++
+				fmt.Printf("=")
+				if counter > 50 {
+					fmt.Println()
+					return
+				}
+			}
+		}
+	}()
+	time.Sleep(2 * time.Second)
+	c.Stop()
 	return user, 0, true
 }
