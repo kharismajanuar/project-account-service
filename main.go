@@ -58,6 +58,7 @@ out:
 			opsiLogin = controllers.TopUp(db, user)
 		case 5:
 			//transfer
+			controllers.MenuTransfer(db, user)
 		case 6:
 			//histori top up
 			opsiLogin = controllers.TopUpHistories(db, user)
