@@ -51,7 +51,7 @@ func Login(db *sql.DB) (models.User, int, bool) {
 	//ambil data user dari database dengan phone = phone
 	var user models.User = models.User{Name: "acep"}
 
-	err = db.QueryRow("SELECT ID, Phone, Name, Password, Date_Of_Birth, Sex From users WHERE phone = ?", phone).
+	err = db.QueryRow("SELECT ID, Phone, Name, Password, Date_Of_Birth, Sex From users WHERE phone = ? AND deleted_at IS NULL", phone).
 		Scan(&user.ID, &user.Phone, &user.Name, &user.Password, &user.DateOfBirth, &user.Sex)
 	if err != nil {
 		fmt.Println("akun tidak ditemukan")
