@@ -52,7 +52,7 @@ out:
 			opsiLogin = controllers.UpdateAccount(db, user.Phone)
 		case 3:
 			//delete akun
-			opsiLogin = controllers.DeleteUser(db, user)
+			opsiLogin = controllers.MenuDelete(db, user)
 		case 4:
 			//top up
 			opsiLogin = controllers.TopUp(db, user)
