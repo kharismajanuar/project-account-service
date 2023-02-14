@@ -18,14 +18,12 @@ func MenuRegister(db *sql.DB, user models.User) {
 	var opsi int = 1
 
 	for opsi != 9 {
-		fmt.Println("\n1. Register Akun Baru\n9. Kembali Ke Menu Utama")
+		fmt.Println("1. Register Akun Baru\n9. Kembali Ke Menu Utama")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
 			opsi = RegisterUser(db, user)
-		default:
-			fmt.Println("Input tidak sesuai")
 		}
 	}
 }
