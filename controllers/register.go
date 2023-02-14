@@ -112,6 +112,13 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 		return -1
 	}
 
+	//validasi tanggal lahir
+	if time.Since(date).Hours()/24/365 < 17 {
+		fmt.Println("\nGagal menambahkan akun!")
+		fmt.Println("Minimal usia untuk mendaftar adalah 17 tahun")
+		return -1
+	}
+
 	queryInsert := "INSERT INTO users (name, phone, password, sex, date_of_birth) VALUES (?, ?, ?, ?, ?);"
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
