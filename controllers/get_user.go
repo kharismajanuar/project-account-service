@@ -7,20 +7,38 @@ import (
 	"project/models"
 )
 
-func MenuGetAllUser(db *sql.DB) {
+func MenuGetUser(db *sql.DB) int {
 
 	opsi := 1
 	for opsi != 9 {
-		fmt.Print("\n")
-		GetAllUsers(db)
-		fmt.Print("9. Kembali Ke Menu Utama\n")
+		fmt.Println("\nMenu Lihat Profil\n1. Cari akun berdasarkan nama\n2. Cari akun berdasarkan nomor telpon\n9. Kembali Ke Menu Utama")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
+		switch opsi {
+		case 1:
+			opsiNama := 1
+			for opsiNama != 9 {
+				fmt.Print("\n")
+				GetUserByName(db)
+				fmt.Print("9. Kembali ke Menu\n")
+				fmt.Print("\nPilih Menu: ")
+				fmt.Scanln(&opsiNama)
+			}
+
+		case 2:
+
+		}
 	}
+	return -1
 }
 
-func GetAllUsers(db *sql.DB) {
-	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL;")
+func GetUserByName(db *sql.DB) {
+	//input pencarian berdasarkan nama
+	var name string
+	fmt.Println("Masukan pencarian:")
+	fmt.Scanln(&name)
+
+	rows, errSelect := db.Query("SELECT id, name, phone FROM users WHERE deleted_at IS NULL AND name LIKE '% ? %';", name)
 	if errSelect != nil {
 		log.Fatal("error query select", errSelect.Error())
 	}
