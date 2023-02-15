@@ -131,8 +131,11 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 		if row > 0 {
 			fmt.Print("\n")
 			fmt.Printf("Akun dengan nama '%s' telah berhasil ditambahkan!\n", newUser.Name)
+			fmt.Print("\n")
 		} else {
+			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan akun baru!")
+			fmt.Print("\n")
 		}
 	}
 
@@ -173,10 +176,12 @@ func InsertBalances(db *sql.DB, balance float64) {
 	} else {
 		row, _ := result.RowsAffected()
 		if row > 0 {
-			fmt.Print("\n")
 			fmt.Printf("Saldo Anda sekarang Rp%v\n", balance)
+			fmt.Print("\n")
 		} else {
+			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan saldo")
+			fmt.Print("\n")
 		}
 	}
 }

@@ -33,9 +33,6 @@ func Transfer(db *sql.DB, user models.User) int {
 	fmt.Println("Masukan nomor telepon tujuan:")
 	fmt.Scanln(&phone)
 
-	//mengambil id melalui nomor telepon
-	receiverID := GetIdByPhone(db, user, phone)
-
 	//input nominal transfer
 	fmt.Println("Masukan nominal transfer:")
 	var nominal float64
@@ -52,15 +49,26 @@ func Transfer(db *sql.DB, user models.User) int {
 	info := in.Text()
 
 	//validasi nomor telpon
+	//cek apakah nomor telepon ada atau tidak di database
+	if GetIdByPhone(db, user, phone) == 0 {
+		fmt.Println("\nTransfer tidak dapat diproses!")
+		fmt.Println("Nomor telepon yang Anda masukan salah")
+		return -1
+	}
+
+	//masukan id ke variable
+	receiverID := GetIdByPhone(db, user, phone)
+
+	//tidak bisa transfer ke nomor sendiri
 	if receiverID == user.ID {
-		fmt.Println("\nTransfer tidak dapat diproses")
-		fmt.Println("Anda tidak dapat melakukan transfer ke nomor Anda sendiri!")
+		fmt.Println("\nTransfer tidak dapat diproses!")
+		fmt.Println("Anda tidak dapat melakukan transfer ke nomor Anda sendiri")
 		return -1
 	}
 
 	//validasi saldo pengirim
 	if nominal > CheckBalance(db, user.ID) {
-		fmt.Println("\nTransfer tidak dapat diproses")
+		fmt.Println("\nTransfer tidak dapat diproses!")
 		fmt.Println("Saldo Anda tidak mencukupi")
 		return -1
 	}
@@ -161,9 +169,8 @@ func GetIdByPhone(db *sql.DB, selectUser models.User, phone string) int {
 	selectUser.Phone = phone
 	errScan := statement.QueryRow(selectUser.Phone).Scan(&user.ID)
 	if errScan != nil {
-		log.Fatal("error scan select", errScan.Error())
+		return 0
 	}
-
 	return user.ID
 }
 
