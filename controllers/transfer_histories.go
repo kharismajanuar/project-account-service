@@ -48,4 +48,9 @@ func GetAllTransferHistories(db *sql.DB, user models.User) {
 		fmt.Printf("Info          : %s\n", transfers.Info)
 		fmt.Print("\n")
 	}
+
+	if len(allTransfer) == 0 {
+		fmt.Println("Anda belum pernah melakukan transaksi dalam menu transfer")
+		fmt.Print("\n")
+	}
 }
