@@ -38,11 +38,7 @@ func Transfer(db *sql.DB, user models.User) int {
 	//input nominal transfer
 	fmt.Println("Masukan nominal transfer:")
 	var nominal float64
-	_, err := fmt.Scanln(&nominal)
-	if err != nil {
-		fmt.Println("Gagal transfer")
-		return 1
-	}
+	_, errScanNominal := fmt.Scanln(&nominal)
 
 	//input berita transfer
 	fmt.Println("Masukan informasi:")
@@ -65,6 +61,13 @@ func Transfer(db *sql.DB, user models.User) int {
 	if receiverID == user.ID {
 		fmt.Println("\nTransfer tidak dapat diproses!")
 		fmt.Println("Anda tidak dapat melakukan transfer ke nomor Anda sendiri")
+		return 1
+	}
+
+	//validasi nominal tidak boleh huruf
+	if errScanNominal != nil {
+		fmt.Println("\nTransfer tidak dapat diproses!")
+		fmt.Println("Nominal yang Anda masukan salah")
 		return 1
 	}
 
