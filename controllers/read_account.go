@@ -23,7 +23,7 @@ func ReadAccount(db *sql.DB, ID int) int {
 
 	//tampilkan saldo
 	var saldo float64
-	err = db.QueryRow("SELECT balance FROM balances WHERE user_id = ?", user.ID).Scan(&saldo)
+	err = db.QueryRow("SELECT balance FROM balances WHERE user_id = ?", ID).Scan(&saldo)
 	if err != nil {
 		fmt.Println("tidak dapat menampilkan saldo")
 		return -1
