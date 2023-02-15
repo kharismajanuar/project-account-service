@@ -13,20 +13,24 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func MenuRegister(db *sql.DB, user models.User) {
+func MenuRegister(db *sql.DB, user models.User) int {
 
-	var opsi int = 1
-
-	for opsi != 9 {
+	opsi := 1
+	for opsi != -1 {
 		fmt.Print("\n")
 		fmt.Println("1. Register Akun Baru\n9. Kembali Ke Menu Utama")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
-			opsi = RegisterUser(db, user)
+			RegisterUser(db, user)
+		case 9:
+			return -1
+		default:
+			fmt.Println("Input yang Anda masukan tidak tersedia")
 		}
 	}
+	return -1
 }
 
 func RegisterUser(db *sql.DB, newUser models.User) int {
