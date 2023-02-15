@@ -15,16 +15,22 @@ func MenuDelete(db *sql.DB, user models.User) int {
 		fmt.Println("\nApakah Anda yakin untuk menghapus akun?")
 		fmt.Print("Pilih (y/n): ")
 		fmt.Scan(&opsi)
-		if opsi == "y" {
-			DeleteUser(db, user)
-			break
+		if opsi == "y" || opsi == "Y" {
+			if !DeleteUser(db, user) {
+				return -1
+			} else {
+				return 9
+			}
+		} else if opsi == "n" || opsi == "N" {
+			return -1
+		} else {
+			fmt.Println("Input yang Anda masukan tidak tersedia")
 		}
 	}
-
 	return -1
 }
 
-func DeleteUser(db *sql.DB, user models.User) int {
+func DeleteUser(db *sql.DB, user models.User) bool {
 	//input menu
 	var phone string
 	fmt.Print("\n")
@@ -34,8 +40,7 @@ func DeleteUser(db *sql.DB, user models.User) int {
 	if GetIdByPhone(db, user, phone) != user.ID {
 		fmt.Println("\nGagal menghapus akun!")
 		fmt.Println("Nomor yang Anda masukan tidak sesuai")
-		fmt.Print("\n")
-		return -1
+		return false
 	}
 
 	query := "UPDATE users SET deleted_at = now() WHERE id = ?;"
@@ -52,12 +57,10 @@ func DeleteUser(db *sql.DB, user models.User) int {
 		if row > 0 {
 			fmt.Print("\n")
 			fmt.Printf("Akun Anda berhasil dihapus!\n")
-			fmt.Print("\n")
 		} else {
 			fmt.Print("\n")
 			fmt.Println("Gagal menghapus akun!")
-			fmt.Print("\n")
 		}
 	}
-	return 9
+	return true
 }

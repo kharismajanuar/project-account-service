@@ -8,16 +8,22 @@ import (
 )
 
 func MenuTransferHistory(db *sql.DB, user models.User) int {
-
 	opsi := 1
 	for opsi != 9 {
 		fmt.Print("\n")
 		GetAllTransferHistories(db, user)
-		fmt.Print("9. Kembali Ke Menu Utama\n")
+		fmt.Print("9. Kembali Ke Menu Utama\n0. Exit\n")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
+		switch opsi {
+		case 9:
+			return -1
+		case 0:
+			return 9
+		default:
+			fmt.Println("Input yang Anda masukan tidak tersedia")
+		}
 	}
-
 	return -1
 }
 
