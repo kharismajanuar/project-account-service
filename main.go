@@ -53,22 +53,22 @@ out:
 		switch opsiLogin {
 		case 1:
 			//baca akun
-			opsiLogin = controllers.ReadAccount(db, user)
+			opsiLogin = controllers.ReadAccount(db, user.ID)
 		case 2:
 			//update akun
-			opsiLogin = controllers.UpdateAccount(db, user.Phone)
+			opsiLogin = controllers.UpdateAccount(db, user.ID)
 		case 3:
 			//delete akun
 			opsiLogin = controllers.MenuDelete(db, user)
 		case 4:
 			//top up
-			opsiLogin = controllers.TopUp(db, user)
+			opsiLogin = controllers.TopUp(db, user.ID)
 		case 5:
 			//transfer
 			opsiLogin = controllers.MenuTransfer(db, user)
 		case 6:
 			//histori top up
-			opsiLogin = controllers.TopUpHistories(db, user)
+			opsiLogin = controllers.TopUpHistories(db, user.ID)
 		case 7:
 			//histori transfer
 			opsiLogin = controllers.MenuTransferHistory(db, user)
