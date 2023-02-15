@@ -7,7 +7,6 @@ import (
 	"os"
 	"project/helper"
 	"project/models"
-	"regexp"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -125,14 +124,9 @@ func updateNama(ID int, db *sql.DB, u *models.User) int {
 	data := in.Text()
 
 	//validasi nama
-	//maksimal 50 karakter
-	if len(data) > 50 {
-		fmt.Println("Nama maksimal 50 karakter")
-		return -1
-	}
-	//hanya huruf dan spasi
-	if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(data) {
-		fmt.Println("Nama hanya boleh alfabet atau spasi")
+	valid, msg := helper.ValidasiNama(data)
+	if !valid {
+		fmt.Println(msg)
 		return -1
 	}
 
