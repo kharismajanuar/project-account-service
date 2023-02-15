@@ -63,7 +63,8 @@ func ValidasiTelepon(data string, db *sql.DB) (valid bool, msg string) {
 		return
 	}
 
-	errScan := statement.QueryRow(data).Scan()
+	var id int
+	errScan := statement.QueryRow(data).Scan(&id)
 	if errScan == nil {
 		valid, msg = false, "Nomor telepon telah digunakan"
 		return
