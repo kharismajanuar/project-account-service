@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"project/models"
 	"regexp"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func updatePassword(ID int, db *sql.DB) int {
+func updatePassword(ID int, db *sql.DB, u *models.User) int {
 	//input password
 	var data string
 	fmt.Print("\n")
@@ -45,7 +46,7 @@ func updatePassword(ID int, db *sql.DB) int {
 	return -1
 }
 
-func updateTanggalLahir(ID int, db *sql.DB) int {
+func updateTanggalLahir(ID int, db *sql.DB, u *models.User) int {
 	fmt.Print("\n")
 	fmt.Print("Input tanggal lahir baru (tahun-bulan-tanggal) : ")
 	in := bufio.NewReader(os.Stdin)
@@ -76,10 +77,11 @@ func updateTanggalLahir(ID int, db *sql.DB) int {
 	}
 
 	fmt.Println("Update tanggal lahir berhasil, menjadi ", dob.Format("January 2, 2006"))
+	u.DateOfBirth = dob
 	return -1
 }
 
-func updateTelepon(ID int, db *sql.DB) int {
+func updateTelepon(ID int, db *sql.DB, u *models.User) int {
 	//input telepon
 	var data string
 	fmt.Print("\n")
@@ -115,10 +117,11 @@ func updateTelepon(ID int, db *sql.DB) int {
 	}
 
 	fmt.Println("Update telepon berhasil, menjadi ", data)
+	u.Phone = data
 	return -1
 }
 
-func updateNama(ID int, db *sql.DB) int {
+func updateNama(ID int, db *sql.DB, u *models.User) int {
 	//input nama
 	fmt.Print("\n")
 	fmt.Print("Input nama baru : ")
@@ -150,10 +153,11 @@ func updateNama(ID int, db *sql.DB) int {
 	}
 
 	fmt.Println("Update nama berhasil, menjadi ", data)
+	u.Name = data
 	return -1
 }
 
-func UpdateAccount(db *sql.DB, ID int) int {
+func UpdateAccount(db *sql.DB, ID int, u *models.User) int {
 	//input pilih data yang akan diupdate
 
 	var opsi int = -1
@@ -165,13 +169,13 @@ out:
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
-			opsi = updateTelepon(ID, db)
+			opsi = updateTelepon(ID, db, u)
 		case 2:
-			opsi = updateNama(ID, db)
+			opsi = updateNama(ID, db, u)
 		case 3:
-			opsi = updateTanggalLahir(ID, db)
+			opsi = updateTanggalLahir(ID, db, u)
 		case 4:
-			opsi = updatePassword(ID, db)
+			opsi = updatePassword(ID, db, u)
 		case 5:
 			break out
 		case 6:
