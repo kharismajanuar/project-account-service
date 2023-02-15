@@ -14,7 +14,6 @@ import (
 )
 
 func MenuRegister(db *sql.DB, user models.User) int {
-
 	opsi := 1
 	for opsi != -1 {
 		fmt.Print("\n")
@@ -35,7 +34,6 @@ func MenuRegister(db *sql.DB, user models.User) int {
 
 func RegisterUser(db *sql.DB, newUser models.User) int {
 	scanner := bufio.NewScanner(os.Stdin)
-	newUser = models.User{}
 
 	//input menu
 	fmt.Print("\n")
@@ -79,13 +77,6 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 		return -1
 	}
 
-	//minimal 8 karakter
-	if len(newUser.Password) < 8 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Password minimal 8 karakter")
-		return -1
-	}
-
 	//hash password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 10)
 	if err != nil {
@@ -101,9 +92,9 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	}
 
 	//validasi tanggal lahir
-	if time.Since(date).Hours()/24/365 < 17 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Minimal usia untuk mendaftar adalah 17 tahun")
+	validDob, msgDob := helper.ValidasiTanggalLahir(date)
+	if !validDob {
+		fmt.Println(msgDob)
 		return -1
 	}
 
@@ -111,6 +102,7 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
 		log.Fatal("error prepare insert", errPrepare.Error())
+		return -1
 	}
 
 	result, errInsert := statementInsert.Exec(newUser.Name, newUser.Phone, hashedPassword, newUser.Sex, newUser.DateOfBirth)
@@ -126,6 +118,7 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan akun baru!")
 			fmt.Print("\n")
+			return -1
 		}
 	}
 
@@ -135,7 +128,6 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 }
 
 func InsertBalances(db *sql.DB, balance float64) {
-
 	queryInsert := "INSERT INTO balances (balance) VALUES (?);"
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
@@ -149,11 +141,8 @@ func InsertBalances(db *sql.DB, balance float64) {
 		row, _ := result.RowsAffected()
 		if row > 0 {
 			fmt.Printf("Saldo Anda sekarang Rp%v\n", balance)
-			fmt.Print("\n")
 		} else {
-			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan saldo")
-			fmt.Print("\n")
 		}
 	}
 }
