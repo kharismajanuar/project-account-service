@@ -12,7 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func updatePassword(phone string, db *sql.DB) int {
+func updatePassword(ID int, db *sql.DB) int {
 	//input password
 	var data string
 	fmt.Println("input password baru :")
@@ -35,7 +35,7 @@ func updatePassword(phone string, db *sql.DB) int {
 		fmt.Println("update password gagal")
 		return -1
 	}
-	_, err = db.Exec("UPDATE users SET password = ?, updated_at = now() WHERE phone = ?", string(hashedPassword), phone)
+	_, err = db.Exec("UPDATE users SET password = ?, updated_at = now() WHERE id = ?", string(hashedPassword), ID)
 	if err != nil {
 		fmt.Println("update password gagal")
 		return -1
@@ -44,7 +44,7 @@ func updatePassword(phone string, db *sql.DB) int {
 	return -1
 }
 
-func updateTanggalLahir(phone string, db *sql.DB) int {
+func updateTanggalLahir(ID int, db *sql.DB) int {
 	fmt.Println("input tanggal (tahun-bulan-tanggal) :")
 	in := bufio.NewReader(os.Stdin)
 	data, err := in.ReadString('\n')
@@ -67,7 +67,7 @@ func updateTanggalLahir(phone string, db *sql.DB) int {
 	}
 
 	//update tanggal lahir
-	_, err = db.Exec("UPDATE users SET date_of_birth = ?, updated_at = now() WHERE phone = ?", dob, phone)
+	_, err = db.Exec("UPDATE users SET date_of_birth = ?, updated_at = now() WHERE ID = ?", dob, ID)
 	if err != nil {
 		fmt.Println("update tanggal lahir gagal")
 		return -1
@@ -77,7 +77,7 @@ func updateTanggalLahir(phone string, db *sql.DB) int {
 	return -1
 }
 
-func updateTelepon(phone string, db *sql.DB) int {
+func updateTelepon(ID int, db *sql.DB) int {
 	//input telepon
 	var data string
 	fmt.Println("input telepon :")
@@ -101,7 +101,7 @@ func updateTelepon(phone string, db *sql.DB) int {
 	}
 
 	//update telepon
-	_, err = db.Exec("UPDATE users SET phone = ?, updated_at = now() WHERE phone = ?", data, phone)
+	_, err = db.Exec("UPDATE users SET phone = ?, updated_at = now() WHERE ID = ?", data, ID)
 	if err != nil {
 		if err.(*mysql.MySQLError).Number == 1062 {
 			fmt.Println("nomor telepon telah dipakai")
@@ -115,7 +115,7 @@ func updateTelepon(phone string, db *sql.DB) int {
 	return -1
 }
 
-func updateNama(phone string, db *sql.DB) int {
+func updateNama(ID int, db *sql.DB) int {
 	//input nama
 	fmt.Println("input nama :")
 	in := bufio.NewScanner(os.Stdin)
@@ -139,7 +139,7 @@ func updateNama(phone string, db *sql.DB) int {
 	}
 
 	//update nama
-	_, err := db.Exec("UPDATE users SET name = ?, updated_at = now() WHERE phone = ?", data, phone)
+	_, err := db.Exec("UPDATE users SET name = ?, updated_at = now() WHERE ID = ?", data, ID)
 	if err != nil {
 		fmt.Println("update nama gagal")
 		return -1
@@ -149,7 +149,7 @@ func updateNama(phone string, db *sql.DB) int {
 	return -1
 }
 
-func UpdateAccount(db *sql.DB, phone string) int {
+func UpdateAccount(db *sql.DB, ID int) int {
 	//input pilih data yang akan diupdate
 
 	var opsi int = -1
@@ -160,13 +160,13 @@ out:
 		fmt.Scanln(&opsi)
 		switch opsi {
 		case 1:
-			opsi = updateTelepon(phone, db)
+			opsi = updateTelepon(ID, db)
 		case 2:
-			opsi = updateNama(phone, db)
+			opsi = updateNama(ID, db)
 		case 3:
-			opsi = updateTanggalLahir(phone, db)
+			opsi = updateTanggalLahir(ID, db)
 		case 4:
-			opsi = updatePassword(phone, db)
+			opsi = updatePassword(ID, db)
 		case 5:
 			break out
 		case 6:
