@@ -73,6 +73,12 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	}
 
 	//validasi password
+	validPass, msgPass := helper.ValidasiPassword(newUser.Password)
+	if !validPass {
+		fmt.Println(msgPass)
+		return -1
+	}
+
 	//minimal 8 karakter
 	if len(newUser.Password) < 8 {
 		fmt.Println("\nGagal menambahkan akun!")
