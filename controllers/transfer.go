@@ -159,7 +159,7 @@ func CheckBalance(db *sql.DB, userId int) float64 {
 }
 
 func GetIdByPhone(db *sql.DB, selectUser models.User, phone string) int {
-	query := "SELECT id FROM users WHERE phone = ?;"
+	query := "SELECT id FROM users WHERE deleted_at IS NULL AND phone = ?;"
 	statement, errPrepare := db.Prepare(query)
 	if errPrepare != nil {
 		log.Fatal("error prepare select", errPrepare.Error())
