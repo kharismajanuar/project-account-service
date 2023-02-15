@@ -12,7 +12,8 @@ import (
 
 func Login(db *sql.DB) (models.User, int, bool) {
 	//input phone, password
-	fmt.Println("Input nomor telepon : ")
+	fmt.Print("\n")
+	fmt.Print("Input nomor telepon : ")
 	var phone string
 	_, err := fmt.Scanln(&phone)
 	if err != nil {
@@ -34,7 +35,7 @@ func Login(db *sql.DB) (models.User, int, bool) {
 		return models.User{}, -1, false
 	}
 
-	fmt.Println("Input password : ")
+	fmt.Print("Input password : ")
 	var password string
 	_, err = fmt.Scanln(&password)
 	if err != nil {
