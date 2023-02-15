@@ -39,12 +39,13 @@ func GetAllTransferHistories(db *sql.DB, user models.User) {
 
 	//fmt.Println(allTransfer)
 	for _, transfers := range allTransfer {
-		fmt.Printf("ID Transfer    : %d\n", transfers.ID)
-		fmt.Printf("Nama Penerima  : %s\n", transfers.ReceiverName)
-		fmt.Printf("Nomor Penerima : %s\n", transfers.ReceiverPhone)
-		fmt.Printf("Nominal        : Rp%.2f\n", transfers.Amount)
-		fmt.Printf("Waktu Transaksi: %s\n", transfers.Date.String())
-		fmt.Printf("Info           : %s\n", transfers.Info)
+		fmt.Printf("ID Transfer   : %d\n", transfers.ID)
+		fmt.Printf("Nama Penerima : %s\n", transfers.ReceiverName)
+		fmt.Printf("Nomor Penerima: %s\n", transfers.ReceiverPhone)
+		fmt.Printf("Nominal       : Rp%.2f\n", transfers.Amount)
+		fmt.Printf("Tanggal       : %s\n", transfers.Date.Format("02 January 2006"))
+		fmt.Printf("Pukul         : %s\n", transfers.Date.Format("15:04:05"))
+		fmt.Printf("Info          : %s\n", transfers.Info)
 		fmt.Print("\n")
 	}
 }
