@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"project/helper"
 	"project/models"
 	"regexp"
 	"time"
@@ -59,19 +60,24 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	newUser.DateOfBirth = date
 
 	//validasi nama
-	//maksimal 50 karakter
-	if len(newUser.Name) > 50 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Karakter nama maksimal 50 karakter")
-		return -1
+	valid, msg := helper.ValidasiNama(newUser.Name)
+	if !valid {
+		fmt.Println(msg)
 	}
 
-	//hanya huruf dan spasi
-	if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
-		return -1
-	}
+	// //maksimal 50 karakter
+	// if len(newUser.Name) > 50 {
+	// 	fmt.Println("\nGagal menambahkan akun!")
+	// 	fmt.Println("Karakter nama maksimal 50 karakter")
+	// 	return -1
+	// }
+
+	// //hanya huruf dan spasi
+	// if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
+	// 	fmt.Println("\nGagal menambahkan akun!")
+	// 	fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
+	// 	return -1
+	// }
 
 	//validasi nomor telepon
 	//minimal 10 karakter
