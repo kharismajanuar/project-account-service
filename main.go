@@ -36,10 +36,8 @@ func main() {
 		}
 		switch opsi {
 		case 1:
-			fmt.Print("\n")
 			user, opsi, isLoggedIn = controllers.Login(db)
 		case 2:
-			fmt.Print("\n")
 			controllers.MenuRegister(db, user)
 		}
 	}

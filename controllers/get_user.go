@@ -10,8 +10,8 @@ import (
 func MenuGetUser(db *sql.DB) int {
 
 	opsi := 1
-	for opsi != 9 {
-		fmt.Println("\nMenu Lihat Profil\n1. Cari akun berdasarkan nama\n2. Cari akun berdasarkan nomor telpon\n9. Kembali Ke Menu Utama")
+	for opsi != -1 {
+		fmt.Println("\nMenu Lihat Profil\n1. Cari akun berdasarkan nama\n2. Cari akun berdasarkan nomor telpon\n9. Kembali Ke Menu Utama\n0. Exit")
 		fmt.Print("\nPilih menu: ")
 		fmt.Scanln(&opsi)
 		switch opsi {
@@ -19,6 +19,12 @@ func MenuGetUser(db *sql.DB) int {
 			GetUserByName(db)
 		case 2:
 			GetUserByPhone(db)
+		case 9:
+			return -1
+		case 0:
+			return 9
+		default:
+			fmt.Println("Input yang Anda masukan tidak tersedia")
 		}
 	}
 	return -1
