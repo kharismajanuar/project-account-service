@@ -27,7 +27,7 @@ func main() {
 	var user models.User
 	isLoggedIn := false
 	for opsi != 0 {
-		fmt.Println("\n1.Login\n2.Register")
+		fmt.Println("\n0.Exit\n1.Login\n2.Register")
 		fmt.Print("\nPilih menu: ")
 		_, err = fmt.Scan(&opsi)
 		if err != nil {
@@ -56,7 +56,7 @@ out:
 			opsiLogin = controllers.ReadAccount(db, user.ID)
 		case 2:
 			//update akun
-			opsiLogin = controllers.UpdateAccount(db, user.ID)
+			opsiLogin = controllers.UpdateAccount(db, user.ID, &user)
 		case 3:
 			//delete akun
 			opsiLogin = controllers.MenuDelete(db, user)
