@@ -6,14 +6,14 @@ import (
 	"project/models"
 )
 
-func TopUpHistories(db *sql.DB, user models.User) int {
+func TopUpHistories(db *sql.DB, ID int) int {
 	//pilih jangka waktu dalam hari
 	var day int
 	fmt.Println("input jangka waktu (dalam hari) :")
 	fmt.Scanln(&day)
 
 	// //select all data from top_up_histories
-	rows, err := db.Query("SELECT date, amount, info FROM top_up_histories WHERE user_id = ? AND datediff(now(),date) <= ?", user.ID, day)
+	rows, err := db.Query("SELECT date, amount, info FROM top_up_histories WHERE user_id = ? AND datediff(now(),date) <= ?", ID, day)
 	if err != nil {
 		fmt.Println("gagal menampilkan riwayat top up")
 		return -1
