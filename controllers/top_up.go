@@ -6,10 +6,9 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"project/models"
 )
 
-func TopUp(db *sql.DB, user models.User) int {
+func TopUp(db *sql.DB, ID int) int {
 	//input jumlah saldo
 	fmt.Println("input jumlah saldo top up :")
 	var saldo float64
@@ -31,7 +30,7 @@ func TopUp(db *sql.DB, user models.User) int {
 	}
 
 	//tambahkan saldo ke balance
-	_, err = tx.Exec("UPDATE balances SET balance = balance + ?,updated_at = now() WHERE user_ID = ?", saldo, user.ID)
+	_, err = tx.Exec("UPDATE balances SET balance = balance + ?,updated_at = now() WHERE user_ID = ?", saldo, ID)
 	if err != nil {
 		fmt.Println("gagal update saldo")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -42,7 +41,7 @@ func TopUp(db *sql.DB, user models.User) int {
 	}
 
 	//tambahkan history top up
-	_, err = tx.Exec("INSERT INTO top_up_histories(date,amount,user_id,info) VALUES (now(),?,?,?)", saldo, user.ID, info)
+	_, err = tx.Exec("INSERT INTO top_up_histories(date,amount,user_id,info) VALUES (now(),?,?,?)", saldo, ID, info)
 	if err != nil {
 		fmt.Println("gagal menambah history top up")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -62,7 +61,7 @@ func TopUp(db *sql.DB, user models.User) int {
 		return -1
 	}
 
-	fmt.Println("top up berhasil sejumlah ", saldo)
+	fmt.Printf("top up berhasil sejumlah %.2f\n", saldo)
 
 	fmt.Println("pilih menu :\n1.Menu Utama\n2.Exit")
 	var opsi int
