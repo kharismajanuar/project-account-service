@@ -18,6 +18,11 @@ func TopUp(db *sql.DB, ID int) int {
 		fmt.Println("Gagal top up")
 		return -1
 	}
+	//validasi saldo
+	if saldo <= 0 {
+		fmt.Println("Saldo harus di atas 0")
+		return -1
+	}
 	//input berita top up
 	fmt.Print("Input berita top up :")
 	in := bufio.NewScanner(os.Stdin)

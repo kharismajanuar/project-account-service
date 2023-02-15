@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"project/helper"
 	"project/models"
 	"regexp"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -25,9 +25,9 @@ func updatePassword(ID int, db *sql.DB, u *models.User) int {
 	}
 
 	//validasi password
-	//minimal 8 karakter
-	if len(data) < 8 {
-		fmt.Println("Password minimal 5 huruf")
+	valid, msg := helper.ValidasiPassword(data)
+	if !valid {
+		fmt.Println(msg)
 		return -1
 	}
 
@@ -64,8 +64,9 @@ func updateTanggalLahir(ID int, db *sql.DB, u *models.User) int {
 	}
 
 	//validasi tanggal lahir
-	if time.Since(dob).Hours()/24/365 < 17 {
-		fmt.Println("Minimal usia 17 tahun")
+	valid, msg := helper.ValidasiTanggalLahir(dob)
+	if !valid {
+		fmt.Println(msg)
 		return -1
 	}
 
@@ -93,25 +94,15 @@ func updateTelepon(ID int, db *sql.DB, u *models.User) int {
 	}
 
 	//validasi telepon
-	//minimal 10 karakter
-	if len(data) < 10 || len(data) > 12 {
-		fmt.Println("Telepon minimal 10 karakter maksimal 12")
-		return -1
-	}
-
-	//hanya angka
-	if !regexp.MustCompile(`^[0-9]*$`).MatchString(data) {
-		fmt.Println("Telepon hanya terdiri dari angka")
+	valid, msg := helper.ValidasiTelepon(data, db)
+	if !valid {
+		fmt.Println(msg)
 		return -1
 	}
 
 	//update telepon
 	_, err = db.Exec("UPDATE users SET phone = ?, updated_at = now() WHERE ID = ?", data, ID)
 	if err != nil {
-		if err.(*mysql.MySQLError).Number == 1062 {
-			fmt.Println("Nomor telepon telah dipakai")
-			return -1
-		}
 		fmt.Println("Update telepon gagal")
 		return -1
 	}
