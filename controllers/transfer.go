@@ -29,7 +29,7 @@ func MenuTransfer(db *sql.DB, user models.User) int {
 	return -1
 }
 
-func Transfer(db *sql.DB, user models.User) {
+func Transfer(db *sql.DB, user models.User) int {
 	//input nomor telepon
 	var phone string
 	fmt.Println("Masukan nomor telepon tujuan:")
@@ -41,6 +41,7 @@ func Transfer(db *sql.DB, user models.User) {
 	_, err := fmt.Scanln(&nominal)
 	if err != nil {
 		fmt.Println("Gagal transfer")
+		return 1
 	}
 
 	//input berita transfer
@@ -54,6 +55,7 @@ func Transfer(db *sql.DB, user models.User) {
 	if GetIdByPhone(db, user, phone) == 0 {
 		fmt.Println("\nTransfer tidak dapat diproses!")
 		fmt.Println("Nomor telepon yang Anda masukan salah")
+		return 1
 	}
 
 	//masukan id ke variable
@@ -63,12 +65,21 @@ func Transfer(db *sql.DB, user models.User) {
 	if receiverID == user.ID {
 		fmt.Println("\nTransfer tidak dapat diproses!")
 		fmt.Println("Anda tidak dapat melakukan transfer ke nomor Anda sendiri")
+		return 1
+	}
+
+	//validasi nominal tidak boleh negatif
+	if nominal < 1 {
+		fmt.Println("\nTransfer tidak dapat diproses!")
+		fmt.Println("Nominal yang Anda masukan salah")
+		return 1
 	}
 
 	//validasi saldo pengirim
 	if nominal > CheckBalance(db, user.ID) {
 		fmt.Println("\nTransfer tidak dapat diproses!")
 		fmt.Println("Saldo Anda tidak mencukupi")
+		return 1
 	}
 
 	//operasi saldo pengirim dan penerima
@@ -78,6 +89,7 @@ func Transfer(db *sql.DB, user models.User) {
 	tx, err := db.Begin()
 	if err != nil {
 		fmt.Println("Gagal transaksi transfer")
+		return 1
 	}
 
 	//kurangi saldo pengirim
@@ -86,7 +98,9 @@ func Transfer(db *sql.DB, user models.User) {
 		fmt.Println("gagal update saldo pengirim")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
+			return 1
 		}
+		return 1
 	}
 
 	//tambahkan saldo penerima
@@ -95,7 +109,9 @@ func Transfer(db *sql.DB, user models.User) {
 		fmt.Println("gagal update saldo penerima")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
+			return 1
 		}
+		return 1
 	}
 
 	//tambahkan history transfer
@@ -104,7 +120,9 @@ func Transfer(db *sql.DB, user models.User) {
 		fmt.Println("gagal menambah history transfer")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
+			return 1
 		}
+		return 1
 	}
 
 	err = tx.Commit()
@@ -112,7 +130,9 @@ func Transfer(db *sql.DB, user models.User) {
 		fmt.Println("gagal commit transfer")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
+			return 1
 		}
+		return 1
 	}
 
 	//mengambil nama user dari id
@@ -127,6 +147,7 @@ func Transfer(db *sql.DB, user models.User) {
 	fmt.Printf("\nSisa saldo Anda sekarang Rp%.2f\n", senderBalance)
 	fmt.Println("============================")
 
+	return 1
 }
 
 func CheckBalance(db *sql.DB, userId int) float64 {
