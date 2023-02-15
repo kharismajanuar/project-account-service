@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"project/helper"
 	"project/models"
 	"regexp"
 	"time"
@@ -44,9 +45,9 @@ func Login(db *sql.DB) (models.User, int, bool) {
 	}
 
 	//validasi password
-	//minimal 8 karakter
-	if len(password) < 8 {
-		fmt.Println("password minimal 5 huruf")
+	valid, msg := helper.ValidasiPassword(password)
+	if !valid {
+		fmt.Println(msg)
 		return models.User{}, -1, false
 	}
 
