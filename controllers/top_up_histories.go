@@ -9,13 +9,20 @@ import (
 func TopUpHistories(db *sql.DB, ID int) int {
 	//pilih jangka waktu dalam hari
 	var day int
-	fmt.Println("input jangka waktu (dalam hari) :")
+	fmt.Print("\n")
+	fmt.Printf("Input jangka waktu (dalam hari) : ")
 	fmt.Scanln(&day)
+
+	//validasi jangka waktu
+	if day <= 0 {
+		fmt.Println("Jangka waktu tidak valid")
+		return -1
+	}
 
 	// //select all data from top_up_histories
 	rows, err := db.Query("SELECT date, amount, info FROM top_up_histories WHERE user_id = ? AND datediff(now(),date) <= ?", ID, day)
 	if err != nil {
-		fmt.Println("gagal menampilkan riwayat top up")
+		fmt.Println("Gagal menampilkan riwayat top up")
 		return -1
 	}
 
@@ -25,25 +32,32 @@ func TopUpHistories(db *sql.DB, ID int) int {
 		var tmp models.TopUpHistories
 		err = rows.Scan(&tmp.Date, &tmp.Amount, &tmp.Info)
 		if err != nil {
-			fmt.Println("gagal menampilkan riwayat top up")
+			fmt.Println("Gagal menampilkan riwayat top up")
 			return -1
 		}
 		topup = append(topup, tmp)
 	}
 
 	//tampilkan data
+	if len(topup) != 0 {
+		fmt.Print("\n")
+		fmt.Println("No\tTanggal\t\t\t\tJumlah\t\tInfo")
+	}
+
 	for i, v := range topup {
-		fmt.Printf("No :\t%d\n", i+1)
-		fmt.Printf("Tanggal :\t%s\n", v.Date.String())
-		fmt.Printf("Jumlah :\t%.2f\n", v.Amount)
-		fmt.Printf("Info :\t%s\n", v.Info)
+		fmt.Print("\n")
+		fmt.Printf("%d\t", i+1)
+		fmt.Printf("%s\t", v.Date.Format("15:04:05 January 2, 2006"))
+		fmt.Printf("%.2f\t", v.Amount)
+		fmt.Printf("%s\t", v.Info)
+		fmt.Print("\n")
 	}
 
 	if len(topup) == 0 {
 		fmt.Println("Tidak ada data riwayat top up")
 	}
 
-	fmt.Println("pilih menu\n1.menu utama\n2.exit")
+	fmt.Print("\n1.Menu utama\n2.Exit\n\nPilih menu : ")
 	var opsi int
 	fmt.Scanln(&opsi)
 	if opsi == 1 {

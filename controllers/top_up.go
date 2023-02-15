@@ -10,29 +10,36 @@ import (
 
 func TopUp(db *sql.DB, ID int) int {
 	//input jumlah saldo
-	fmt.Println("input jumlah saldo top up :")
+	fmt.Print("\n")
+	fmt.Print("Input jumlah saldo top up :")
 	var saldo float64
 	_, err := fmt.Scanln(&saldo)
 	if err != nil {
-		fmt.Println("gagal top up")
+		fmt.Println("Gagal top up")
 		return -1
 	}
 	//input berita top up
-	fmt.Println("input berita top up :")
+	fmt.Print("Input berita top up :")
 	in := bufio.NewScanner(os.Stdin)
 	in.Scan()
 	info := in.Text()
 
+	//validasi info
+	if len(info) > 250 {
+		fmt.Println("Gagal top up, maksimal 250 karakter")
+		return -1
+	}
+
 	tx, err := db.Begin()
 	if err != nil {
-		fmt.Println("gagal transaksi top up")
+		fmt.Println("Gagal transaksi top up")
 		return -1
 	}
 
 	//tambahkan saldo ke balance
 	_, err = tx.Exec("UPDATE balances SET balance = balance + ?,updated_at = now() WHERE user_ID = ?", saldo, ID)
 	if err != nil {
-		fmt.Println("gagal update saldo")
+		fmt.Println("Gagal update saldo")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
 			return -1
@@ -43,7 +50,7 @@ func TopUp(db *sql.DB, ID int) int {
 	//tambahkan history top up
 	_, err = tx.Exec("INSERT INTO top_up_histories(date,amount,user_id,info) VALUES (now(),?,?,?)", saldo, ID, info)
 	if err != nil {
-		fmt.Println("gagal menambah history top up")
+		fmt.Println("Gagal menambah history top up")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
 			return -1
@@ -53,7 +60,7 @@ func TopUp(db *sql.DB, ID int) int {
 
 	err = tx.Commit()
 	if err != nil {
-		fmt.Println("gagal commit top up")
+		fmt.Println("Gagal commit top up")
 		if rbErr := tx.Rollback(); rbErr != nil {
 			log.Printf("tx err: %v, rb err : %v", err, rbErr)
 			return -1
@@ -61,9 +68,9 @@ func TopUp(db *sql.DB, ID int) int {
 		return -1
 	}
 
-	fmt.Printf("top up berhasil sejumlah %.2f\n", saldo)
+	fmt.Printf("Top up berhasil sejumlah %.2f\n", saldo)
 
-	fmt.Println("pilih menu :\n1.Menu Utama\n2.Exit")
+	fmt.Print("\n1.Menu Utama\n2.Exit\n\nPilih menu : ")
 	var opsi int
 	_, err = fmt.Scanln(&opsi)
 	if err != nil {
