@@ -8,7 +8,6 @@ import (
 	"os"
 	"project/helper"
 	"project/models"
-	"regexp"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -60,42 +59,16 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	newUser.DateOfBirth = date
 
 	//validasi nama
-	valid, msg := helper.ValidasiNama(newUser.Name)
-	if !valid {
-		fmt.Println(msg)
-	}
-
-	// //maksimal 50 karakter
-	// if len(newUser.Name) > 50 {
-	// 	fmt.Println("\nGagal menambahkan akun!")
-	// 	fmt.Println("Karakter nama maksimal 50 karakter")
-	// 	return -1
-	// }
-
-	// //hanya huruf dan spasi
-	// if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
-	// 	fmt.Println("\nGagal menambahkan akun!")
-	// 	fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
-	// 	return -1
-	// }
-
-	//validasi nomor telepon
-	//minimal 10 karakter
-	if len(newUser.Phone) < 10 || len(newUser.Phone) > 12 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon minimal 10 karakter dan maksimal 12")
+	validName, msgName := helper.ValidasiNama(newUser.Name)
+	if !validName {
+		fmt.Println(msgName)
 		return -1
 	}
 
-	//hanya boleh memasukan angka
-	if !regexp.MustCompile(`^[0-9]*$`).MatchString(newUser.Phone) {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon hanya boleh terdiri dari angka")
-		return -1
-	}
-
-	//nomor sudah dipakai
-	if DuplicatePhone(db, newUser, newUser.Phone) {
+	//validasi nomor telpon
+	validPhone, msgPhone := helper.ValidasiTelepon(newUser.Phone, db)
+	if !validPhone {
+		fmt.Println(msgPhone)
 		return -1
 	}
 
@@ -153,24 +126,6 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	InsertBalances(db, 0)
 
 	return -1
-}
-
-func DuplicatePhone(db *sql.DB, selectUser models.User, phone string) bool {
-	query := "SELECT id FROM users WHERE phone = ?;"
-	statement, errPrepare := db.Prepare(query)
-	if errPrepare != nil {
-		log.Fatal("error prepare select", errPrepare.Error())
-	}
-
-	var user models.User
-	selectUser.Phone = phone
-	errScan := statement.QueryRow(selectUser.Phone).Scan(&user.ID)
-	if errScan == nil {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon sudah digunakan")
-		return true
-	}
-	return false
 }
 
 func InsertBalances(db *sql.DB, balance float64) {
