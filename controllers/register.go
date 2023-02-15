@@ -6,15 +6,14 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"project/helper"
 	"project/models"
-	"regexp"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
 func MenuRegister(db *sql.DB, user models.User) int {
-
 	opsi := 1
 	for opsi != -1 {
 		fmt.Print("\n")
@@ -35,7 +34,6 @@ func MenuRegister(db *sql.DB, user models.User) int {
 
 func RegisterUser(db *sql.DB, newUser models.User) int {
 	scanner := bufio.NewScanner(os.Stdin)
-	newUser = models.User{}
 
 	//input menu
 	fmt.Print("\n")
@@ -59,45 +57,23 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	newUser.DateOfBirth = date
 
 	//validasi nama
-	//maksimal 50 karakter
-	if len(newUser.Name) > 50 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Karakter nama maksimal 50 karakter")
+	validName, msgName := helper.ValidasiNama(newUser.Name)
+	if !validName {
+		fmt.Println(msgName)
 		return -1
 	}
 
-	//hanya huruf dan spasi
-	if !regexp.MustCompile(`^[a-zA-Z ]*$`).MatchString(newUser.Name) {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nama hanya boleh diisi oleh huruf alfabet atau spasi")
-		return -1
-	}
-
-	//validasi nomor telepon
-	//minimal 10 karakter
-	if len(newUser.Phone) < 10 || len(newUser.Phone) > 12 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon minimal 10 karakter dan maksimal 12")
-		return -1
-	}
-
-	//hanya boleh memasukan angka
-	if !regexp.MustCompile(`^[0-9]*$`).MatchString(newUser.Phone) {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon hanya boleh terdiri dari angka")
-		return -1
-	}
-
-	//nomor sudah dipakai
-	if DuplicatePhone(db, newUser, newUser.Phone) {
+	//validasi nomor telpon
+	validPhone, msgPhone := helper.ValidasiTelepon(newUser.Phone, db)
+	if !validPhone {
+		fmt.Println(msgPhone)
 		return -1
 	}
 
 	//validasi password
-	//minimal 8 karakter
-	if len(newUser.Password) < 8 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Password minimal 8 karakter")
+	validPass, msgPass := helper.ValidasiPassword(newUser.Password)
+	if !validPass {
+		fmt.Println(msgPass)
 		return -1
 	}
 
@@ -116,9 +92,9 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	}
 
 	//validasi tanggal lahir
-	if time.Since(date).Hours()/24/365 < 17 {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Minimal usia untuk mendaftar adalah 17 tahun")
+	validDob, msgDob := helper.ValidasiTanggalLahir(date)
+	if !validDob {
+		fmt.Println(msgDob)
 		return -1
 	}
 
@@ -126,6 +102,7 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
 		log.Fatal("error prepare insert", errPrepare.Error())
+		return -1
 	}
 
 	result, errInsert := statementInsert.Exec(newUser.Name, newUser.Phone, hashedPassword, newUser.Sex, newUser.DateOfBirth)
@@ -141,6 +118,7 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan akun baru!")
 			fmt.Print("\n")
+			return -1
 		}
 	}
 
@@ -149,26 +127,7 @@ func RegisterUser(db *sql.DB, newUser models.User) int {
 	return -1
 }
 
-func DuplicatePhone(db *sql.DB, selectUser models.User, phone string) bool {
-	query := "SELECT id FROM users WHERE phone = ?;"
-	statement, errPrepare := db.Prepare(query)
-	if errPrepare != nil {
-		log.Fatal("error prepare select", errPrepare.Error())
-	}
-
-	var user models.User
-	selectUser.Phone = phone
-	errScan := statement.QueryRow(selectUser.Phone).Scan(&user.ID)
-	if errScan == nil {
-		fmt.Println("\nGagal menambahkan akun!")
-		fmt.Println("Nomor telepon sudah digunakan")
-		return true
-	}
-	return false
-}
-
 func InsertBalances(db *sql.DB, balance float64) {
-
 	queryInsert := "INSERT INTO balances (balance) VALUES (?);"
 	statementInsert, errPrepare := db.Prepare(queryInsert)
 	if errPrepare != nil {
@@ -182,11 +141,8 @@ func InsertBalances(db *sql.DB, balance float64) {
 		row, _ := result.RowsAffected()
 		if row > 0 {
 			fmt.Printf("Saldo Anda sekarang Rp%v\n", balance)
-			fmt.Print("\n")
 		} else {
-			fmt.Print("\n")
 			fmt.Println("Gagal menambahkan saldo")
-			fmt.Print("\n")
 		}
 	}
 }
