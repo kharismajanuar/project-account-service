@@ -43,7 +43,7 @@ func TopUp(db *sql.DB, ID int) int {
 
 	//select saldo
 	var currentBalance float64
-	err = tx.QueryRow("SELECT balance FROM balances WHERE user_id - ? FOR UPDATE", ID).Scan(&currentBalance)
+	err = tx.QueryRow("SELECT balance FROM balances WHERE user_id = ?", ID).Scan(&currentBalance)
 	if err != nil {
 		fmt.Println("Gagal update saldo")
 		if rbErr := tx.Rollback(); rbErr != nil {
@@ -52,6 +52,9 @@ func TopUp(db *sql.DB, ID int) int {
 		}
 		return -1
 	}
+	fmt.Println(currentBalance)
+	fmt.Println(saldo)
+	fmt.Println(saldo + currentBalance)
 
 	//tambahkan saldo ke balance
 	_, err = tx.Exec("UPDATE balances SET balance = ?,updated_at = now() WHERE user_ID = ?", currentBalance+saldo, ID)
